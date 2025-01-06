@@ -11,6 +11,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.presentation.ui.base.DetailCard
+import com.desuzed.everyweather.ui.AppPreview
+import com.desuzed.everyweather.ui.theming.EveryweatherTheme
+import com.desuzed.everyweather.util.detailCardMain
 
 @Composable
 fun CardDetailDayItem(detailCard: DetailCard, modifier: Modifier = Modifier) {
@@ -69,5 +72,13 @@ private fun RightColumn(detailCard: DetailCard, modifier: Modifier = Modifier) {
             header = stringResource(id = R.string.moonrise_moonset),
             text = detailCard.moon
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun Preview() {
+    EveryweatherTheme {
+        CardDetailDayItem(detailCard = detailCardMain)
     }
 }

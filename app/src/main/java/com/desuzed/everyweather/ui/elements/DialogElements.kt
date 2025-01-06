@@ -17,12 +17,6 @@ import com.desuzed.everyweather.R
 import com.desuzed.everyweather.ui.AppPreview
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
 
-@AppPreview
-@Composable
-private fun PreviewAppAlertDialog() {
-    AppAlertDialog("Delete", onPositiveButtonClick = {}, {})
-}
-
 @Composable
 fun AppAlertDialog(title: String, onPositiveButtonClick: () -> Unit, onDismiss: () -> Unit) {
     AppDialog(onDismiss = onDismiss) {
@@ -49,7 +43,6 @@ fun AppAlertDialog(title: String, onPositiveButtonClick: () -> Unit, onDismiss: 
     }
 }
 
-
 @Composable
 fun AppDialog(
     modifier: Modifier = Modifier,
@@ -64,5 +57,13 @@ fun AppDialog(
         ) {
             content()
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun PreviewAppAlertDialog() {
+    EveryweatherTheme {
+        AppAlertDialog("Delete", onPositiveButtonClick = {}, {})
     }
 }

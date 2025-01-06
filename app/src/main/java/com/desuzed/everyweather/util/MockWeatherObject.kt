@@ -1,6 +1,10 @@
 package com.desuzed.everyweather.util
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.desuzed.everyweather.domain.model.location.FavoriteLocation
+import com.desuzed.everyweather.domain.model.settings.DistanceDimen
+import com.desuzed.everyweather.domain.model.settings.PressureDimen
 import com.desuzed.everyweather.domain.model.weather.Astro
 import com.desuzed.everyweather.domain.model.weather.Current
 import com.desuzed.everyweather.domain.model.weather.Day
@@ -8,6 +12,8 @@ import com.desuzed.everyweather.domain.model.weather.ForecastDay
 import com.desuzed.everyweather.domain.model.weather.Hour
 import com.desuzed.everyweather.domain.model.weather.Location
 import com.desuzed.everyweather.domain.model.weather.WeatherContent
+import com.desuzed.everyweather.presentation.ui.main.DetailCardMain
+import com.desuzed.everyweather.util.MockWeatherObject.weather
 import java.util.UUID
 
 object MockWeatherObject {
@@ -103,3 +109,14 @@ object MockWeatherObject {
         locationDto.copy(latLon = UUID.randomUUID().toString()),
     )
 }
+
+val detailCardMain: DetailCardMain
+    @Composable
+    get() {
+        return DetailCardMain(
+            response = weather,
+            res = LocalContext.current.resources,
+            windSpeed = DistanceDimen.METRIC_KMH,
+            pressureDimen = PressureDimen.MILLIMETERS,
+        )
+    }

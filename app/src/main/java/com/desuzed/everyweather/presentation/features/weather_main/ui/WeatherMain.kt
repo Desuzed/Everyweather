@@ -86,6 +86,7 @@ fun WeatherMain(
         sheetState = sheetState,
         dayItem = selectedDayItem,
         onBackClick = {
+            //todo переместить в эффект
             coroutineScope.launch {
                 sheetState.hide()
                 selectedDayItem = null

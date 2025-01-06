@@ -27,22 +27,6 @@ import com.desuzed.everyweather.ui.theming.EveryweatherTheme
 import com.desuzed.everyweather.util.Constants.EMPTY_STRING
 import com.desuzed.everyweather.util.MockWeatherObject
 
-@AppPreview
-@Composable
-private fun Preview() {
-    EveryweatherTheme {
-        HourItemContent(
-            HourUi(
-                windSpeed = DistanceDimen.METRIC_KMH,
-                temperature = TempDimen.CELCIUS,
-                hour = MockWeatherObject.weather.forecastDay[0].hourForecast[0],
-                timeZone = MockWeatherObject.weather.location.timezone,
-                res = LocalContext.current.resources,
-            )
-        )
-    }
-}
-
 @Composable
 fun HourItemContent(hourItem: HourUi) {
     Card(
@@ -84,5 +68,21 @@ fun HourItemContent(hourItem: HourUi) {
                 )
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun Preview() {
+    EveryweatherTheme {
+        HourItemContent(
+            HourUi(
+                windSpeed = DistanceDimen.METRIC_KMH,
+                temperature = TempDimen.CELCIUS,
+                hour = MockWeatherObject.weather.forecastDay[0].hourForecast[0],
+                timeZone = MockWeatherObject.weather.location.timezone,
+                res = LocalContext.current.resources,
+            )
+        )
     }
 }

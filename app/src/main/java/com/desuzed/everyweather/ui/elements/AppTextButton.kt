@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -15,19 +14,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.desuzed.everyweather.ui.AppPreview
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
-
-@AppPreview
-@Composable
-private fun Preview() {
-    EveryweatherTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            AppTextButton(text = "button") {}
-        }
-    }
-}
 
 @Composable
 fun AppTextButton(
@@ -40,7 +26,7 @@ fun AppTextButton(
     Text(
         modifier = modifier.clickable(
             interactionSource = remember { MutableInteractionSource() },
-            indication = rememberRipple(color = Color.Black),
+            indication = null, //rememberRipple(color = Color.Black),
             onClick = onClick,
         ),
         text = text,
@@ -48,4 +34,17 @@ fun AppTextButton(
         textAlign = textAlign,
         color = color,
     )
+}
+
+@AppPreview
+@Composable
+private fun Preview() {
+    EveryweatherTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            AppTextButton(text = "button") {}
+        }
+    }
 }

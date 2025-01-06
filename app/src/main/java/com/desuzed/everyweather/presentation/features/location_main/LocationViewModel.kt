@@ -37,7 +37,7 @@ class LocationViewModel(
 
             is LocationAction.ConfirmFoundLocation -> onConfirmLocation(action.geo)
             is LocationAction.FavoriteLocationClick -> onFavoriteLocation(action.favoriteLocationDto)
-            is LocationAction.NavigateToWeather -> navigateToWeatherWithDelay(action.latLng)
+            is LocationAction.NavigateToWeather -> navigateToWeatherWithDelay(action.latLng) //todo delete?
             LocationAction.Redirection -> redirectToLocationApiPage()
             LocationAction.FindByQuery -> findTypedLocation()
             is LocationAction.ToggleMap -> toggleMap(action.isVisible)

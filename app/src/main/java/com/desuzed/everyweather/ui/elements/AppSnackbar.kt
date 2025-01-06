@@ -30,32 +30,8 @@ import com.desuzed.everyweather.util.Constants.EMPTY_STRING
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
+//TODO попробовать отказатться от снекбаров вообще в пользу боттомшитов т.к очень сильно всё усложняется из за них и они имеют ограниченный функуционал
 const val TOO_LONG_STRING_LENGTH = 60
-
-/**
- * Чтобы увидеть превью нажми "start interactive mode"
- * */
-@AppPreview
-@Composable
-private fun AppSnackbarPreview() {
-    EveryweatherTheme {
-        val snackbarHostState = remember { SnackbarHostState() }
-        LaunchedEffect(key1 = Unit) {
-            launch {
-                snackbarHostState.showSnackbar(
-                    message = "12345",
-                    actionLabel = "77777",
-                    duration = SnackbarDuration.Indefinite
-                )
-            }
-        }
-        Box {
-            AppSnackbar(
-                snackbarState = snackbarHostState,
-            )
-        }
-    }
-}
 
 @Composable
 fun BoxScope.AppSnackbar(
@@ -152,4 +128,29 @@ private fun <P : ActionResultProvider> getProvider(providerClass: KClass<P>): Ac
     val resources = LocalContext.current.resources
 
     return ActionResultProviderFactory.provide(providerClass, resources)
+}
+
+/**
+ * Чтобы увидеть превью нажми "start interactive mode"
+ * */
+@AppPreview
+@Composable
+private fun AppSnackbarPreview() {
+    EveryweatherTheme {
+        val snackbarHostState = remember { SnackbarHostState() }
+        LaunchedEffect(key1 = Unit) {
+            launch {
+                snackbarHostState.showSnackbar(
+                    message = "12345",
+                    actionLabel = "77777",
+                    duration = SnackbarDuration.Indefinite
+                )
+            }
+        }
+        Box {
+            AppSnackbar(
+                snackbarState = snackbarHostState,
+            )
+        }
+    }
 }

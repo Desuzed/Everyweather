@@ -1,6 +1,9 @@
 package com.desuzed.everyweather.ui.elements
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -13,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.desuzed.everyweather.R
+import com.desuzed.everyweather.ui.AppPreview
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
 import com.desuzed.everyweather.util.Constants
 
@@ -63,4 +68,25 @@ fun AppRadioButton(modifier: Modifier = Modifier, isSelected: Boolean, onClick: 
         selected = isSelected,
         onClick = onClick
     )
+}
+
+@AppPreview
+@Composable
+private fun Preview() {
+    EveryweatherTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            FloatingButton(
+                id = R.drawable.ic_my_location,
+                onClick = {},
+            )
+            RoundedButton(modifier = Modifier.fillMaxWidth(), text = "text", onClick = {})
+            AppRadioButton(isSelected = false, onClick = {})
+            AppRadioButton(isSelected = true, onClick = {})
+        }
+    }
 }

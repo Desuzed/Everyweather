@@ -24,3 +24,5 @@ fun GradientBox(
         content = content,
     )
 }
+
+//todo previews

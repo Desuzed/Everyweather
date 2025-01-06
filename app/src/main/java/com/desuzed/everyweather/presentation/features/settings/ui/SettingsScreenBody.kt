@@ -37,22 +37,24 @@ import com.desuzed.everyweather.util.Constants.EMPTY_STRING
 @AppPreview
 @Composable
 private fun Preview() {
-    SettingsScreenBody(
-        settingsParams = SettingsMapper.getSettingsUiParams(
-            distanceDimenList = DistanceDimen.entries,
-            tempList = TempDimen.entries,
-            pressureList = PressureDimen.entries,
-            langList = Lang.entries,
-            darkModeList = DarkMode.entries,
-            selectedMode = DarkMode.SYSTEM,
-            selectedLang = Lang.EN,
-            selectedDistanceDimen = DistanceDimen.METRIC_MS,
-            selectedTempDimen = TempDimen.CELCIUS,
-            selectedPressureDimen = PressureDimen.INCHES,
-        ),
-        updateStatus = null,
-        onAction = {},
-    )
+    EveryweatherTheme {
+        SettingsScreenBody(
+            settingsParams = SettingsMapper.getSettingsUiParams(
+                distanceDimenList = DistanceDimen.entries,
+                tempList = TempDimen.entries,
+                pressureList = PressureDimen.entries,
+                langList = Lang.entries,
+                darkModeList = DarkMode.entries,
+                selectedMode = DarkMode.SYSTEM,
+                selectedLang = Lang.EN,
+                selectedDistanceDimen = DistanceDimen.METRIC_MS,
+                selectedTempDimen = TempDimen.CELCIUS,
+                selectedPressureDimen = PressureDimen.INCHES,
+            ),
+            updateStatus = null,
+            onAction = {},
+        )
+    }
 }
 
 @Composable
