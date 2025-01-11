@@ -3,6 +3,7 @@ package com.desuzed.everyweather.di
 import com.desuzed.everyweather.presentation.features.in_app_update.InAppUpdateViewModel
 import com.desuzed.everyweather.presentation.features.location_main.LocationViewModel
 import com.desuzed.everyweather.presentation.features.main_activity.MainActivityViewModel
+import com.desuzed.everyweather.presentation.features.map_point_selection.MapPointSelectionViewModel
 import com.desuzed.everyweather.presentation.features.settings.SettingsViewModel
 import com.desuzed.everyweather.presentation.features.shared.SharedViewModel
 import com.desuzed.everyweather.presentation.features.weather_main.WeatherMainViewModel
@@ -21,7 +22,6 @@ val viewModelModule = module {
         LocationViewModel(
             locationInteractor = get(),
             analytics = get(),
-            sharedPrefsProvider = get(),
             weatherDataRepository = get(),
             systemInteractor = get(),
         )
@@ -48,6 +48,13 @@ val viewModelModule = module {
 
     viewModel {
         InAppUpdateViewModel(
+            analytics = get(),
+        )
+    }
+
+    viewModel {
+        MapPointSelectionViewModel(
+            weatherDataRepository = get(),
             analytics = get(),
         )
     }

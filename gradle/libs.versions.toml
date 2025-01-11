@@ -1,19 +1,21 @@
 [versions]
 appPackageName = "com.desuzed.everyweather"
 androidMinSdk = "21"
-androidTargetSdk = "34"
-androidCompileSdk = "34"
+androidTargetSdk = "35"
+androidCompileSdk = "35"
 appVersion = "8"
 appVersionName = "2.1.2"
-agp = "8.2.1"
+agp = "8.6.1"
 kotlinGradlePlugin = "1.7.20"
 kotlin = "1.9.20"
 kotlinKsp = "1.9.20-1.0.14"
-compose = "1.6.7"
+compose = "1.7.6"
+#todo проверрить на новой версси и навигацию и компоуз
+composeNav = "1.7.6"
 composeMaterial3 = "1.2.1"
 androidx-activityCompose = "1.9.0"
 compose-compiler = "1.5.4"
-mapsCompose = "4.4.1"
+mapsCompose = "6.4.0"
 coilCompose = "2.4.0"
 navigation = "2.7.7"
 coroutines = "1.7.3"
@@ -23,7 +25,7 @@ loggingInterceptor = "4.9.1"
 room = "2.6.1"
 datastorePreferences = "1.1.1"
 secretsGradlePlugin = "2.0.1"
-android-lifecycle = "2.7.0"
+android-lifecycle = "2.8.7"
 #todo проверить старую ошибку с локалями и темной темой
 appUpdate = "2.1.0"
 kotlinxSerialization = "1.6.3"
@@ -33,7 +35,7 @@ firebaseCrashlyticsGradle = "2.9.9"
 firebaseAnalytics = "22.0.0"
 googleServices = "4.4.1"
 playServicesLocation = "21.2.0"
-playServicesMaps = "18.2.0"
+playServicesMaps = "19.0.0"
 playServicesAds = "23.0.0"
 junit = "4.13.2"
 androidx-junit = "1.1.5"
@@ -51,6 +53,7 @@ android-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", ver
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 composeUiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+compose-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "composeNav" }
 composeMaterial3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 compose-maps = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -115,6 +118,7 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 compose = [
     "androidx-activity-compose",
     "compose-material",
+    "compose-material-navigation",
     "composeMaterial3",
     "coil-compose",
     "compose-maps",

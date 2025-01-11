@@ -90,7 +90,7 @@ fun LocationMainPageContent(
                 .bottomEdgeToEdgeImePadding()
                 .bottomEdgeToEdgePadding()
                 .padding(horizontal = dimensionResource(id = R.dimen.dimen_10)),
-            onClick = { onAction(LocationAction.ToggleMap(true)) },
+            onClick = { onAction(LocationAction.NavigateToMapSelection) },
             text = stringResource(id = R.string.find_on_map)
         )
     }

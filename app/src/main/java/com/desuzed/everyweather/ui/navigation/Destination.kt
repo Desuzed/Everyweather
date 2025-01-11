@@ -10,4 +10,6 @@ sealed class Destination(
     data object LocationScreen : Destination("location_screen")
 
     data object SettingsScreen : Destination("settings_screen")
+
+    data object MapSelectionScreen : Destination("map_selection_screen")
 }

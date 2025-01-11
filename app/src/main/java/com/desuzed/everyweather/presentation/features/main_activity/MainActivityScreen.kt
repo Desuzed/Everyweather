@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Surface
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -35,6 +37,12 @@ enum class EdgeToEdgeInset {
     Top, Bottom
 }
 
+// какие нужны диалоги
+// - общий, вместо снекбаров. С Кнопками ок и ретрай. Как ловить ретрай колбэки? Общий кэш с подпиской?
+// - для инап апдейта
+// - кастом для ввода инфы, пусть управляется на экране?
+// - диалог с картой? хотя карту вообще лучше вынести в экране, но как  и куда. Отдельный экран с поиском, скопированным с гео экрана?
+// - кастом в настройках с радиобаттанами, тоже пусть управляется экраном
 @Composable
 fun MainActivityScreen(
     mainActivityState: MainActivityState,

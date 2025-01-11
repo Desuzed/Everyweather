@@ -1,6 +1,5 @@
 package com.desuzed.everyweather.presentation.features.weather_next_days.ui
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -26,7 +25,7 @@ fun NextDaysWeatherBottomSheet(
 //            containerColor = getBackgroundColor(),
 //            contentColor = getOnBackgroundColor(),
             onDismissRequest = onBackClick,
-            windowInsets = WindowInsets(0, 0, 0, 0),
+            // windowInsets = WindowInsets(0, 0, 0, 0),
             content = {
                 NextDayBottomSheetContent(dayItem = dayItem)
             }

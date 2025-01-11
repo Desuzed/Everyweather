@@ -1,21 +1,14 @@
 package com.desuzed.everyweather.presentation.features.settings.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.domain.model.settings.DarkMode
@@ -27,12 +20,11 @@ import com.desuzed.everyweather.presentation.features.settings.SettingsAction
 import com.desuzed.everyweather.presentation.ui.settings.SettingsMapper
 import com.desuzed.everyweather.presentation.ui.settings.SettingsUiParams
 import com.desuzed.everyweather.ui.AppPreview
+import com.desuzed.everyweather.ui.elements.AppToolbar
 import com.desuzed.everyweather.ui.elements.BoldText
 import com.desuzed.everyweather.ui.elements.GradientBox
-import com.desuzed.everyweather.ui.elements.LargeBoldText
 import com.desuzed.everyweather.ui.extensions.topEdgeToEdgePadding
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
-import com.desuzed.everyweather.util.Constants.EMPTY_STRING
 
 @AppPreview
 @Composable
@@ -74,28 +66,10 @@ fun SettingsScreenBody(
                 .padding(dimensionResource(id = R.dimen.dimen_10))
                 .verticalScroll(rememberScrollState()),
         ) {
-            Box(
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dimen_10))
-            ) {
-                LargeBoldText(
-                    text = stringResource(id = R.string.settings),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
-                IconButton(
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.dimen_34))
-                        .padding(start = dimensionResource(id = R.dimen.dimen_10)),
-                    onClick = { onAction(SettingsAction.OnBackClick) },
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_round_arrow_back),
-                            contentDescription = EMPTY_STRING,
-                            tint = EveryweatherTheme.colors.onBackgroundPrimary
-                        )
-                    },
-                )
-            }
+            AppToolbar(
+                title = stringResource(id = R.string.settings),
+                onStartIconClick = { onAction(SettingsAction.OnBackClick) },
+            )
             BoldText(
                 text = stringResource(id = R.string.app_settings),
                 modifier = Modifier.padding(

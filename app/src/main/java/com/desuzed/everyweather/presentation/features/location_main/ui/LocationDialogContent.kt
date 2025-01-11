@@ -20,18 +20,6 @@ fun LocationDialogContent(
 ) {
     dialog?.let {
         when (dialog) {
-            LocationDialog.ConfirmPickedLocation -> {
-                AppAlertDialog(
-                    title = stringResource(id = R.string.load_weather_of_this_location),
-                    onPositiveButtonClick = {
-                        onAction(LocationAction.NewLocationConfirm)
-                    },
-                    onDismiss = {
-                        onAction(LocationAction.DismissConfirmPinDialog)
-                    },
-                )
-            }
-
             is LocationDialog.EditLocation -> {
                 EditLocationDialogContent(
                     editLocationText = editLocationText,

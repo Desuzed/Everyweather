@@ -2,6 +2,7 @@ package com.desuzed.everyweather.di
 
 import com.desuzed.everyweather.analytics.InAppUpdateAnalytics
 import com.desuzed.everyweather.analytics.LocationMainAnalytics
+import com.desuzed.everyweather.analytics.MapPointSelectionAnalytics
 import com.desuzed.everyweather.analytics.SettingsAnalytics
 import com.desuzed.everyweather.analytics.WeatherMainAnalytics
 import org.koin.android.ext.koin.androidApplication
@@ -19,5 +20,8 @@ val analyticsModule = module {
     }
     single {
         InAppUpdateAnalytics(androidApplication())
+    }
+    single {
+        MapPointSelectionAnalytics(androidApplication())
     }
 }

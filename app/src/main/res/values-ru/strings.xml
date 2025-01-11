@@ -4,6 +4,7 @@
     <string name="current_location">Текущее местоположение</string>
     <string name="search_hint">Поиск</string>
     <string name="set_place_on_map">Установите точку на карте</string>
+    <string name="map_screen_title">Карта</string>
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
     <string name="load_weather_of_this_location">Загрузить погоду этого места?</string>

@@ -1,38 +1,18 @@
 package com.desuzed.everyweather.presentation.features.location_main.ui
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import com.desuzed.everyweather.presentation.features.location_main.LocationAction
 import com.desuzed.everyweather.presentation.features.location_main.LocationMainState
-import com.desuzed.everyweather.presentation.features.location_main.ui.map.MapBottomSheetScreen
 
-//@AppPreview
-//@Composable
-//private fun Preview() {
-//    EveryweatherTheme {
-//        LocationMain(
-//            navController = NavController(LocalContext.current)
-//        )
-//    }
-//}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationMain(
     state: LocationMainState,
-    sheetState: SheetState,
     onAction: (LocationAction) -> Unit,
 ) {
     LocationMainBody(
         locations = state.locations,
         isLoading = state.isLoading,
         geoText = state.geoText,
-        onAction = onAction,
-    )
-    MapBottomSheetScreen(
-        sheetState = sheetState,
-        state = state,
         onAction = onAction,
     )
     LocationDialogContent(
