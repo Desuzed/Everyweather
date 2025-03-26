@@ -1,5 +1,6 @@
 package com.desuzed.everyweather.presentation.features.weather_next_days.ui
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.desuzed.everyweather.domain.model.settings.DistanceDimen
@@ -29,7 +30,7 @@ private fun Preview() {
                     res = LocalContext.current.resources,
                 ),
                 detailCard = DetailCardNextDays(
-                    DistanceDimen.METRIC_MS,
+                    windSpeed = DistanceDimen.METRIC_MS,
                     forecastDay = MockWeatherObject.forecastDay,
                     pressureDimen = PressureDimen.INCHES,
                     res = LocalContext.current.resources
@@ -48,6 +49,7 @@ fun NextDayItem(
 ) {
     RoundedCardItem(
         onClick = {
+            Log.e("CLICK", "NextDayItem: CLICK", )
             onNextDayClick(dayItem)
         }
     ) {

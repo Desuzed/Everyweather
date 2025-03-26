@@ -1,5 +1,6 @@
 package com.desuzed.everyweather.presentation.features.weather_main.ui
 
+import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -75,6 +76,7 @@ fun WeatherMain(
         isAddButtonEnabled = state.isAddButtonEnabled,
         onAction = onAction,
         onNextDayClick = {
+            Log.e("CLICK", "WeatherMain: CLICKED", )
             //todo переместить в эффект
             coroutineScope.launch {
                 selectedDayItem = it

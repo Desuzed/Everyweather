@@ -39,49 +39,47 @@ fun InAppUpdateContent(
     state: InAppUpdateState,
     onAction: (InAppUpdateAction) -> Unit,
 ) {
-    EveryweatherTheme {
-        Surface(
-            modifier = Modifier.height(dimensionResource(id = R.dimen.dimen_350)),
-            shape = RoundedCornerShape(
-                topStart = dimensionResource(id = R.dimen.corner_radius_30),
-                topEnd = dimensionResource(id = R.dimen.corner_radius_30)
-            ),
-            color = EveryweatherTheme.colors.tertiaryBackground,
+    Surface(
+        modifier = Modifier.height(dimensionResource(id = R.dimen.dimen_350)),
+        shape = RoundedCornerShape(
+            topStart = dimensionResource(id = R.dimen.corner_radius_30),
+            topEnd = dimensionResource(id = R.dimen.corner_radius_30)
+        ),
+        color = EveryweatherTheme.colors.tertiaryBackground,
+    ) {
+        val inAppUpdateUiParams = InAppUpdateUiParams.fromInAppUpdateStatus(
+            status = state.updateStatus!!, //todo
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.dimen_20),
+                    horizontal = dimensionResource(id = R.dimen.dimen_10),
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            val inAppUpdateUiParams = InAppUpdateUiParams.fromInAppUpdateStatus(
-                status = state.updateStatus,
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        vertical = dimensionResource(id = R.dimen.dimen_20),
-                        horizontal = dimensionResource(id = R.dimen.dimen_10),
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BoldText(text = stringResource(id = inAppUpdateUiParams.titleId))
-                    RegularText(
-                        text = stringResource(id = inAppUpdateUiParams.descriptionId),
-                        modifier = Modifier.padding(
-                            top = dimensionResource(id = R.dimen.dimen_20)
-                        )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                BoldText(text = stringResource(id = inAppUpdateUiParams.titleId))
+                RegularText(
+                    text = stringResource(id = inAppUpdateUiParams.descriptionId),
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.dimen_20)
                     )
-                }
-                Image(
-                    painter = painterResource(id = R.drawable.ic_weather_splash),
-                    contentDescription = EMPTY_STRING,
-                    modifier = Modifier
-                        .weight(ONE_FLOAT)
-                        .padding(
-                            vertical = dimensionResource(id = R.dimen.dimen_10)
-                        )
                 )
-                InAppUpdateButtonsRow(inAppUpdateUiParams, onAction)
             }
+            Image(
+                painter = painterResource(id = R.drawable.ic_weather_splash),
+                contentDescription = EMPTY_STRING,
+                modifier = Modifier
+                    .weight(ONE_FLOAT)
+                    .padding(
+                        vertical = dimensionResource(id = R.dimen.dimen_10)
+                    )
+            )
+            InAppUpdateButtonsRow(inAppUpdateUiParams, onAction)
         }
     }
 }

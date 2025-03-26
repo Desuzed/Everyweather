@@ -1,11 +1,11 @@
 package com.desuzed.everyweather.di
 
+import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.presentation.features.in_app_update.InAppUpdateViewModel
 import com.desuzed.everyweather.presentation.features.location_main.LocationViewModel
 import com.desuzed.everyweather.presentation.features.main_activity.MainActivityViewModel
 import com.desuzed.everyweather.presentation.features.map_point_selection.MapPointSelectionViewModel
 import com.desuzed.everyweather.presentation.features.settings.SettingsViewModel
-import com.desuzed.everyweather.presentation.features.shared.SharedViewModel
 import com.desuzed.everyweather.presentation.features.weather_main.WeatherMainViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -16,6 +16,7 @@ val viewModelModule = module {
             systemSettingsInteractor = get(),
             systemInteractor = get(),
             weatherDataRepository = get(),
+            appUpdateProvider = get(),
         )
     }
     viewModel {
@@ -46,9 +47,11 @@ val viewModelModule = module {
         )
     }
 
-    viewModel {
+    viewModel { (status: InAppUpdateStatus) ->
         InAppUpdateViewModel(
+            status = status,
             analytics = get(),
+            appUpdateProvider = get(),
         )
     }
 
@@ -56,12 +59,6 @@ val viewModelModule = module {
         MapPointSelectionViewModel(
             weatherDataRepository = get(),
             analytics = get(),
-        )
-    }
-
-    viewModel {
-        SharedViewModel(
-            appUpdateProvider = get(),
         )
     }
 }

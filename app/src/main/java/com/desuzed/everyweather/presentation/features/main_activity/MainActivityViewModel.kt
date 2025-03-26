@@ -1,8 +1,10 @@
 package com.desuzed.everyweather.presentation.features.main_activity
 
 import androidx.lifecycle.viewModelScope
+import com.desuzed.everyweather.data.repository.providers.app_update.AppUpdateProvider
 import com.desuzed.everyweather.domain.interactor.SystemInteractor
 import com.desuzed.everyweather.domain.interactor.SystemSettingsInteractor
+import com.desuzed.everyweather.domain.model.app_update.AppUpdateState
 import com.desuzed.everyweather.domain.model.location.UserLocationResult
 import com.desuzed.everyweather.domain.model.result.ActionResult
 import com.desuzed.everyweather.domain.model.settings.DarkMode
@@ -11,6 +13,7 @@ import com.desuzed.everyweather.domain.repository.local.WeatherDataRepository
 import com.desuzed.everyweather.presentation.base.Action
 import com.desuzed.everyweather.presentation.base.BaseViewModel
 import com.desuzed.everyweather.util.Constants.LANG_RU_LOWERCASE
+import com.desuzed.everyweather.util.Constants.ZERO_LONG
 import com.desuzed.everyweather.util.Timer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -26,6 +29,7 @@ class MainActivityViewModel(
     private val systemInteractor: SystemInteractor,
     private val systemSettingsInteractor: SystemSettingsInteractor,
     private val weatherDataRepository: WeatherDataRepository,
+    private val appUpdateProvider: AppUpdateProvider,
 ) : BaseViewModel<MainActivityState, MainActivitySideEffect, Action>(MainActivityState()) {
 
     private val _messageFlow = MutableSharedFlow<ActionResult>(
@@ -42,6 +46,7 @@ class MainActivityViewModel(
         collect(systemSettingsInteractor.darkMode, ::collectDarkTheme)
         collect(systemInteractor.userLocationFlow(), ::collectUserLocationResult)
         collect(systemInteractor.hasInternetFlow(), ::onHasInternet)
+        collect(appUpdateProvider.appUpdateState, ::onAppUpdateState)
     }
 
     fun onLanguage(appLanguage: String?) {
@@ -71,6 +76,10 @@ class MainActivityViewModel(
     fun areLocationPermissionsGranted(): Boolean = systemInteractor.arePermissionsGranted()
 
     fun isFirstRun() = systemInteractor.isFirstRunApp()
+
+    fun startListeningForUpdates() {
+        appUpdateProvider.startListeningForUpdates()
+    }
 
     private fun collectLanguage(lang: Lang) {
         val lowercaseLang = lang.lang.lowercase()
@@ -118,6 +127,45 @@ class MainActivityViewModel(
     private fun onHasInternet(hasInternet: Boolean) {
         setState { copy(isInternetUnavailable = !hasInternet) }
     }
+
+    private fun onAppUpdateState(appUpdateState: AppUpdateState?) {
+        when (appUpdateState) {
+            is AppUpdateState.Downloading -> onDownloadingUpdateProgress(appUpdateState)
+            AppUpdateState.ReadyToInstall -> updateReadyToComplete()
+            AppUpdateState.UpdateAvailable -> showUpdateAvailableDialog()
+            null -> {}
+        }
+    }
+
+    private fun onDownloadingUpdateProgress(state: AppUpdateState.Downloading) {
+        setState {
+            copy(
+                totalBytes = state.totalBytes,
+                bytesDownloaded = state.bytesDownloaded,
+                isUpdateLoading = state.isUpdateLoading,
+            )
+        }
+    }
+
+    private fun updateReadyToComplete() {
+        showUpdateReadyToInstallDialog()
+        setState {
+            copy(
+                totalBytes = ZERO_LONG,
+                bytesDownloaded = ZERO_LONG,
+                isUpdateLoading = false,
+            )
+        }
+    }
+
+    private fun showUpdateAvailableDialog() {
+        setSideEffect(MainActivitySideEffect.UpdateAvailableDialog)
+    }
+
+    private fun showUpdateReadyToInstallDialog() {
+        setSideEffect(MainActivitySideEffect.UpdateReadyToInstallDialog)
+    }
+
 
     private companion object {
         private const val TIMER_DURATION = 20

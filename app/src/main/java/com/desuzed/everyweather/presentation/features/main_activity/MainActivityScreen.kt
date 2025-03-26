@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
@@ -25,7 +26,6 @@ import androidx.navigation.compose.rememberNavController
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.presentation.features.main_activity.ui.BottomContentWidget
 import com.desuzed.everyweather.presentation.features.main_activity.ui.DownloadingInAppUpdateWidget
-import com.desuzed.everyweather.presentation.features.shared.SharedState
 import com.desuzed.everyweather.presentation.features.weather_main.WeatherMainScreen
 import com.desuzed.everyweather.ui.elements.RegularText
 import com.desuzed.everyweather.ui.navigation.appNavGraph
@@ -45,16 +45,16 @@ enum class EdgeToEdgeInset {
 // - кастом в настройках с радиобаттанами, тоже пусть управляется экраном
 @Composable
 fun MainActivityScreen(
-    mainActivityState: MainActivityState,
-    sharedState: SharedState,
+    state: MainActivityState,
 ) {
-    val navController = rememberNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
     var localEdgeToEdgePaddingsProvided by remember {
         mutableStateOf(setOf<EdgeToEdgeInset>())
     }
     CompositionLocalProvider(LocalEdgeToEdgeInset provides localEdgeToEdgePaddingsProvided) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (mainActivityState.isInternetUnavailable) {
+            if (state.isInternetUnavailable) {
                 localEdgeToEdgePaddingsProvided = addInsetToSet(
                     inset = EdgeToEdgeInset.Top,
                     set = localEdgeToEdgePaddingsProvided,
@@ -80,23 +80,32 @@ fun MainActivityScreen(
                     .fillMaxSize()
                     .weight(1f),
             ) {
-                NavHost(
-                    navController = navController,
-                    startDestination = WeatherMainScreen.destination.route,
+                ModalBottomSheetLayout(
+                    bottomSheetNavigator = bottomSheetNavigator,
+                    sheetShape = RoundedCornerShape(
+                        topStart = dimensionResource(id = R.dimen.corner_radius_30),
+                        topEnd = dimensionResource(id = R.dimen.corner_radius_30)
+                    ),
+                    sheetBackgroundColor = EveryweatherTheme.colors.tertiaryBackground,
                 ) {
-                    appNavGraph(navController)
+                    NavHost(
+                        navController = navController,
+                        startDestination = WeatherMainScreen.destination.route,
+                    ) {
+                        appNavGraph(navController)
+                    }
                 }
             }
-            if (mainActivityState.isLookingForLocation || sharedState.isUpdateLoading) {
+            if (state.isLookingForLocation || state.isUpdateLoading) {
                 localEdgeToEdgePaddingsProvided = addInsetToSet(
                     inset = EdgeToEdgeInset.Bottom,
                     set = localEdgeToEdgePaddingsProvided,
                 )
-                BottomContentWidget(isLookingForLocation = mainActivityState.isLookingForLocation) {
+                BottomContentWidget(isLookingForLocation = state.isLookingForLocation) {
                     DownloadingInAppUpdateWidget(
-                        isDownloadingInProgress = sharedState.isUpdateLoading,
-                        totalBytes = sharedState.totalBytes,
-                        bytesDownloaded = sharedState.bytesDownloaded,
+                        isDownloadingInProgress = state.isUpdateLoading,
+                        totalBytes = state.totalBytes,
+                        bytesDownloaded = state.bytesDownloaded,
                     )
                 }
             } else {

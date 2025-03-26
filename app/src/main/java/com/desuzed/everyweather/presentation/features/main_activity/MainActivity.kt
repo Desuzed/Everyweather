@@ -23,9 +23,6 @@ import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.domain.model.result.ActionResult
 import com.desuzed.everyweather.domain.model.result.ActionType
 import com.desuzed.everyweather.domain.model.settings.DarkMode
-import com.desuzed.everyweather.presentation.features.shared.SharedEffect
-import com.desuzed.everyweather.presentation.features.shared.SharedState
-import com.desuzed.everyweather.presentation.features.shared.SharedViewModel
 import com.desuzed.everyweather.ui.extensions.collectAsStateWithLifecycle
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
 import com.desuzed.everyweather.util.collect
@@ -36,7 +33,6 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     // private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModel<MainActivityViewModel>()
-    private val sharedViewModel by viewModel<SharedViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Everyweather)//todo поменять сплешскрин на компоуз версию чтобы не видеть белый фон при входе в приложение
@@ -46,17 +42,13 @@ class MainActivity : ComponentActivity() {
                 val activityState by viewModel.state.collectAsStateWithLifecycle(
                     initialState = MainActivityState()
                 )
-                val sharedState by sharedViewModel.state.collectAsStateWithLifecycle(
-                    initialState = SharedState()
-                )
-
-                MainActivityScreen(activityState, sharedState)
+                MainActivityScreen(activityState)
             }
         }
         handleEdgeToEdge()
         handleFirstEnterApp()
         collectData()
-        sharedViewModel.startListeningForUpdates()
+        viewModel.startListeningForUpdates()
     }
 
     fun showSnackbar(
@@ -124,22 +116,10 @@ class MainActivity : ComponentActivity() {
     private fun collectData() {
         collect(viewModel.messageFlow, ::onNewActionResult)
         collect(viewModel.sideEffect, ::onNewAction)
-        collect(sharedViewModel.state, ::onDownloadingUpdateProgress)
-        collect(sharedViewModel.sideEffect) {
-            when (it) {
-                SharedEffect.UpdateAvailableDialog -> showUpdateDialog(InAppUpdateStatus.READY_TO_LAUNCH_UPDATE)
-                SharedEffect.UpdateReadyToInstallDialog -> showUpdateDialog(InAppUpdateStatus.READY_TO_INSTALL)
-            }
-        }
     }
 
-    fun showUpdateDialog(status: InAppUpdateStatus) {
-//        if (supportFragmentManager.findFragmentByTag(IN_APP_UPDATE_DIALOG_TAG) == null) {
-//            InAppUpdateBottomSheet().apply {
-//                setUpdateStatus(status)
-//                show(supportFragmentManager, IN_APP_UPDATE_DIALOG_TAG)
-//            }
-//        }
+    fun showUpdateDialog(status: InAppUpdateStatus) { //todo delete
+        //todo action
     }
 
     private fun onNewActionResult(actionResult: ActionResult) {
@@ -171,6 +151,8 @@ class MainActivity : ComponentActivity() {
         when (action) {
             is MainActivitySideEffect.ChangeLanguage -> changeAppLanguage(action.lang)
             is MainActivitySideEffect.ChangeDarkMode -> changeDarkMode(action.mode)
+            MainActivitySideEffect.UpdateAvailableDialog -> showUpdateDialog(InAppUpdateStatus.READY_TO_LAUNCH_UPDATE)
+            MainActivitySideEffect.UpdateReadyToInstallDialog -> showUpdateDialog(InAppUpdateStatus.READY_TO_INSTALL)
         }
     }
 
@@ -200,14 +182,6 @@ class MainActivity : ComponentActivity() {
             newBase
         }
         super.attachBaseContext(newContext)
-    }
-
-    private fun onDownloadingUpdateProgress(sharedState: SharedState) {
-//        with(binding) {
-//            appUpdateLayout.isVisible = sharedState.isUpdateLoading
-//            appUpdateProgressBar.max = sharedState.totalBytes.toInt()
-//            appUpdateProgressBar.progress = sharedState.bytesDownloaded.toInt()
-//        }
     }
 
     private fun handleEdgeToEdge() {
