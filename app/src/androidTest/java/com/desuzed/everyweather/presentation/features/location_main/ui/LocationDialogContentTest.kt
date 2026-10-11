@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -13,6 +14,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.desuzed.everyweather.R
@@ -83,8 +85,13 @@ class LocationDialogContentTest {
             }
         }
 
+        composeRule.onNodeWithText(composeRule.activity.getString(R.string.change_location_name))
+            .assertIsDisplayed()
+        closeSoftKeyboard()
         pressBack()
-        composeRule.runOnIdle { }
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.runOnIdle { actions.contains(LocationAction.DismissDialog) }
+        }
 
         assertEquals(LocationAction.DismissDialog, actions.single())
         composeRule.onNodeWithText(composeRule.activity.getString(R.string.change_location_name))

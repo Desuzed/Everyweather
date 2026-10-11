@@ -6,8 +6,9 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.desuzed.everyweather.R
@@ -62,7 +63,10 @@ class WeatherForecastFlowTest {
         composeRule.waitUntil(timeoutMillis = 5_000) {
             composeRule.onAllNodesWithTag(cardTag).fetchSemanticsNodes().isNotEmpty()
         }
-        composeRule.onNodeWithTag(cardTag).performClick()
+        composeRule.onNodeWithTag(cardTag)
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
 
         composeRule.waitUntil(timeoutMillis = 5_000) {
             composeRule.onAllNodesWithText(expectedDay.detailCard.humidity)
