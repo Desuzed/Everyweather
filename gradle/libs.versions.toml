@@ -1,28 +1,27 @@
 [versions]
 appPackageName = "com.desuzed.everyweather"
-androidMinSdk = "21"
-androidTargetSdk = "35"
-androidCompileSdk = "35"
-appVersion = "8"
-appVersionName = "2.1.2"
-agp = "8.6.1"
-kotlinGradlePlugin = "1.7.20"
-kotlin = "1.9.20"
-kotlinKsp = "1.9.20-1.0.14"
-compose = "1.7.6"
+androidMinSdk = "23"
+androidTargetSdk = "36"
+androidCompileSdk = "36"
+appVersion = "12"
+appVersionName = "2.1.5"
+agp = "9.1.1"
+kotlin = "2.2.10"
+kotlinKsp = "2.3.11"
+compose = "1.7.8"
 #todo проверрить на новой версси и навигацию и компоуз
-composeNav = "1.7.6"
-composeMaterial3 = "1.2.1"
-androidx-activityCompose = "1.9.0"
-compose-compiler = "1.5.4"
+composeNav = "1.7.8"
+composeMaterial3 = "1.3.2"
+androidx-activityCompose = "1.13.0"
+#compose-compiler = "1.5.8"
 mapsCompose = "6.4.0"
-coilCompose = "2.4.0"
-navigation = "2.7.7"
-coroutines = "1.7.3"
-koin = "3.5.3"
+coilCompose = "2.7.0"
+navigation = "2.9.7"
+coroutines = "1.10.2"
+koin = "4.2.1"
 retrofit = "2.9.0"
 loggingInterceptor = "4.9.1"
-room = "2.6.1"
+room = "2.8.4"
 datastorePreferences = "1.1.1"
 secretsGradlePlugin = "2.0.1"
 android-lifecycle = "2.8.7"
@@ -30,10 +29,10 @@ android-lifecycle = "2.8.7"
 appUpdate = "2.1.0"
 kotlinxSerialization = "1.6.3"
 
-firebaseCrashlytics = "19.0.0"
-firebaseCrashlyticsGradle = "2.9.9"
-firebaseAnalytics = "22.0.0"
-googleServices = "4.4.1"
+firebaseCrashlytics = "20.0.4"
+firebaseCrashlyticsGradle = "3.0.7"
+firebaseAnalytics = "23.0.0"
+googleServices = "4.4.4"
 playServicesLocation = "21.2.0"
 playServicesMaps = "19.0.0"
 playServicesAds = "23.0.0"
@@ -43,9 +42,20 @@ espressoCore = "3.5.1"
 
 
 [libraries]
+material-views = { module = "com.google.android.material:material", version = "1.12.0" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+mockk = { module = "io.mockk:mockk", version = "1.13.16" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "loggingInterceptor" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
+
 #Gradle
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+#kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 #TODO Возможно можно удалить
 android-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "android-lifecycle" }
 
@@ -97,7 +107,6 @@ firebase-crashlyticsGradle = { module = "com.google.firebase:firebase-crashlytic
 
 #Util
 app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
-secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
 #Test
@@ -108,10 +117,14 @@ androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-j
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+secretsGradle = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradle" }
 
 [bundles]
 #DI
@@ -121,8 +134,7 @@ compose = [
     "compose-material-navigation",
     "composeMaterial3",
     "coil-compose",
-    "compose-maps",
-    "composeUiTooling"
+    "compose-maps"
 ]
 network = ["retrofit", "converter-gson", "logging-interceptor"]
 koin = ["koin-core", "koin-android", "koin-compose"]
@@ -130,6 +142,5 @@ google-services = [
     "play-services-location",
     "play-services-maps",
     "play-services-ads",
-    "google-services",
 ]
 analytic = ["firebase-crashlytics", "firebase-analytics"]
