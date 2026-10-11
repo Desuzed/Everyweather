@@ -63,3 +63,5 @@ The agent harness includes root `AGENTS.md`, `.codex/config.toml`, and `.codex/a
 Official references: [Android SDK CLI](https://developer.android.com/tools), [Android CLI commands](https://developer.android.com/tools/agents/android-cli/commands), [Codex project instructions](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
 CI initializes the Android SDK with a pinned `android-actions/setup-android` step in both jobs before calling `sdkmanager`. This avoids relying on Android tools being preinstalled on the runner. The two SDK bootstrap regressions reproduced the missing setup before the fix and pass afterward.
+
+UI CI проверяет API 23 и 36. Тесты прогноза прокручивают карточку в видимую область перед реальным нажатием; проверка Back в редакторе локации закрывает IME и ждёт dismiss. `ic_weather_splash.png` находится в базовом `drawable`, чтобы ресурс был доступен на minSdk 23. Эти сценарии воспроизвели падения в GitHub Actions до исправления.
