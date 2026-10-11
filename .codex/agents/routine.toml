@@ -1,0 +1,5 @@
+name = "routine"
+description = "Routine bounded implementation, inventory and tests following established patterns."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+developer_instructions = """Work only in assigned files. Follow AGENTS.md. Preserve existing changes. Escalate ambiguous behaviour to the primary agent. Do not run Gradle concurrently with the coordinator or commit files."""
