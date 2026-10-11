@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
-import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.presentation.features.in_app_update.ui.InAppUpdateContent
 import com.desuzed.everyweather.ui.extensions.collectAsStateWithLifecycle
 import com.desuzed.everyweather.util.collect
@@ -33,28 +32,22 @@ class InAppUpdateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.onShown()
         collect(viewModel.sideEffect, ::onNewAction)
-       // viewModel.resolveStatus(status)
     }
 
     private fun onNewAction(action: InAppUpdateEffect) {
         when (action) {
             InAppUpdateEffect.Dismiss -> dismiss()
-            InAppUpdateEffect.InstallUpdate -> installUpdate()
-            InAppUpdateEffect.UpdateApplication -> startDownloadingUpdate()
+            InAppUpdateEffect.InstallUpdate -> {
+                viewModel.completeUpdate()
+                dismiss()
+            }
+            InAppUpdateEffect.UpdateApplication -> {
+                viewModel.startUpdate(requireActivity())
+                dismiss()
+            }
         }
-    }
-
-    private fun startDownloadingUpdate() {
-        dismiss()
-    }
-
-    private fun installUpdate() {
-        dismiss()
-    }
-
-    companion object {
-        private const val IN_APP_UPDATE_STATUS_KEY = "IN_APP_UPDATE_STATUS_KEY"
     }
 
 }

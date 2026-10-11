@@ -21,7 +21,7 @@ val repositoryModule = module {
     }
 
     single {
-        AppUpdateProvider(androidApplication())
+        AppUpdateProvider(androidApplication(), telemetry = get())
     }
 
     single<RemoteDataRepository> {
