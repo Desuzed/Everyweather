@@ -1,5 +1,6 @@
 package com.desuzed.everyweather.presentation.features.settings.ui
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import com.desuzed.everyweather.domain.model.settings.DarkMode
 import com.desuzed.everyweather.domain.model.settings.DistanceDimen
@@ -15,8 +16,10 @@ import com.desuzed.everyweather.presentation.ui.settings.SettingUiItem
 import com.desuzed.everyweather.presentation.ui.settings.Temperature
 import com.desuzed.everyweather.presentation.ui.settings.WindSpeed
 import com.desuzed.everyweather.ui.elements.AppDialog
+import com.desuzed.everyweather.ui.elements.AppSheetDialog
 
 //TODO: Переделать на боттомшиты
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingDialog(
     showDialogType: SettingsType?,
@@ -33,7 +36,6 @@ fun SettingDialog(
     onAction: (SettingsAction) -> Unit,
     onDismiss: () -> Unit,
 ) {
-
     when (showDialogType) {
         SettingsType.LANG -> AppDialog(onDismiss = onDismiss) {
             AppDialog(onDismiss = onDismiss) {
@@ -49,16 +51,29 @@ fun SettingDialog(
         }
 
         SettingsType.TEMP -> AppDialog(onDismiss = onDismiss) {
-            AppDialog(onDismiss = onDismiss) {
-                SettingPickerContent(
-                    selectedItem = temperature,
-                    radioOptions = temperatureDialogItems
-                ) {
-                    onAction(
-                        SettingsAction.ChangeTemperatureDimension(tempDimen = it)
-                    )
-                }
-            }
+            AppSheetDialog(
+                onDismissRequest = onDismiss,
+                content = {
+                    SettingPickerContent(
+                        selectedItem = temperature,
+                        radioOptions = temperatureDialogItems
+                    ) {
+                        onAction(
+                            SettingsAction.ChangeTemperatureDimension(tempDimen = it)
+                        )
+                    }
+                },
+            )
+//            AppDialog(onDismiss = onDismiss) {
+//                SettingPickerContent(
+//                    selectedItem = temperature,
+//                    radioOptions = temperatureDialogItems
+//                ) {
+//                    onAction(
+//                        SettingsAction.ChangeTemperatureDimension(tempDimen = it)
+//                    )
+//                }
+//            }
         }
 
         SettingsType.DISTANCE -> AppDialog(onDismiss = onDismiss) {
