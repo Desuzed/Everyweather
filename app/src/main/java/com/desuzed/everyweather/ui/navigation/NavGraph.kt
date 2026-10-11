@@ -16,12 +16,6 @@ fun NavGraphBuilder.appNavGraph(
     navController: NavHostController,
 ) = apply {
 
-//    composable(Destination.SplashScreen.route) {
-//        SplashScreen(
-//            navController = navController,
-//        )
-//    }
-
     composeScreenDestination(WeatherMainScreen, navController)
 
     composeScreenDestination(LocationMainScreen, navController)
@@ -33,11 +27,11 @@ fun NavGraphBuilder.appNavGraph(
     composeBottomSheetDestination(
         screen = InAppUpdateScreen,
         navController = navController,
-//        arguments = listOf(navArgument("InAppUpdateStatus") {
-//            type = NavType.StringType
-//            build()
-//        }
-        //)
+        arguments = listOf(
+            navArgument("inAppUpdateStatus") {
+                type = NavType.StringType
+            }
+        )
     )
 
 }

@@ -42,8 +42,10 @@ object SettingsScreen : BaseComposeScreen<
             onEffect = {
                 when (it) {
                     SettingsEffect.NavigateBack -> navController.popBackStack()
-                    is SettingsEffect.ShowReadyToInstallDialog -> TODO()
-                    is SettingsEffect.ShowUpdateDialog -> TODO()
+                    is SettingsEffect.ShowReadyToInstallDialog ->
+                        navController.navigate(Destination.InAppUpdateScreen.createRoute(it.status))
+                    is SettingsEffect.ShowUpdateDialog ->
+                        navController.navigate(Destination.InAppUpdateScreen.createRoute(it.status))
                 }
             },
             content = { state ->

@@ -17,6 +17,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.desuzed.everyweather.R
+import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.presentation.features.in_app_update.InAppUpdateAction
 import com.desuzed.everyweather.presentation.features.in_app_update.InAppUpdateState
 import com.desuzed.everyweather.ui.AppPreview
@@ -48,7 +49,7 @@ fun InAppUpdateContent(
         color = EveryweatherTheme.colors.tertiaryBackground,
     ) {
         val inAppUpdateUiParams = InAppUpdateUiParams.fromInAppUpdateStatus(
-            status = state.updateStatus!!, //todo
+            status = state.updateStatus ?: InAppUpdateStatus.READY_TO_LAUNCH_UPDATE,
         )
         Column(
             modifier = Modifier

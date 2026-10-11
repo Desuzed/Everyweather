@@ -1,8 +1,8 @@
 package com.desuzed.everyweather.ui.navigation
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.desuzed.everyweather.presentation.features.main_activity.MainActivity
@@ -10,7 +10,9 @@ import com.desuzed.everyweather.presentation.features.main_activity.MainActivity
 @Composable
 @ReadOnlyComposable
 fun getMainActivity(): MainActivity {
-    return LocalContext.current as MainActivity
+    return requireNotNull(LocalActivity.current as? MainActivity) {
+        "Everyweather navigation must be hosted by MainActivity"
+    }
 }
 
 fun <T> NavController.setResult(key: String, value: T) {

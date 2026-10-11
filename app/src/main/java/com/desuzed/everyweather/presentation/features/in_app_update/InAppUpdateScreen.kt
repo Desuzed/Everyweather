@@ -1,8 +1,8 @@
 package com.desuzed.everyweather.presentation.features.in_app_update
 
-import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
@@ -28,8 +28,7 @@ object InAppUpdateScreen : BaseComposeScreen<
         navController: NavHostController,
         navBackStackEntry: NavBackStackEntry,
     ) {
-        val inAppUpdateStatus = remember { getStatusArgument(navBackStackEntry)  }
-        Log.e("TAG", "ProvideScreenForNavGraph: inAppUpdateStatus = $inAppUpdateStatus ${navBackStackEntry.arguments}", )
+        val inAppUpdateStatus = getStatusArgument(navBackStackEntry)
         InAppUpdateComposeScreen(
             navController = navController,
             inAppUpdateStatus = inAppUpdateStatus,
@@ -42,14 +41,22 @@ object InAppUpdateScreen : BaseComposeScreen<
         inAppUpdateStatus: InAppUpdateStatus?,
         viewModel: InAppUpdateViewModel = koinViewModel(parameters = { parametersOf(inAppUpdateStatus) })
     ) {
+        val activity = LocalActivity.current ?: return
+        LaunchedEffect(viewModel) { viewModel.onShown() }
         ComposeScreen(
             viewModel = viewModel,
-            backAction = null, //todo
+            backAction = InAppUpdateAction.Dismiss,
             onEffect = {
                 when (it) {
                     InAppUpdateEffect.Dismiss -> navController.popBackStack()
-                    InAppUpdateEffect.InstallUpdate -> TODO()
-                    InAppUpdateEffect.UpdateApplication -> TODO()
+                    InAppUpdateEffect.InstallUpdate -> {
+                        viewModel.completeUpdate()
+                        navController.popBackStack()
+                    }
+                    InAppUpdateEffect.UpdateApplication -> {
+                        viewModel.startUpdate(activity)
+                        navController.popBackStack()
+                    }
                 }
             },
             content = { state ->
@@ -62,9 +69,7 @@ object InAppUpdateScreen : BaseComposeScreen<
     }
 
     private fun getStatusArgument(navBackStackEntry: NavBackStackEntry): InAppUpdateStatus? {
-        val arg = navBackStackEntry.arguments?.getString("InAppUpdateStatus")?.also {
-            Log.e("TAG", "getStatusArgument: $it", )
-        } ?: return null
+        val arg = navBackStackEntry.arguments?.getString("inAppUpdateStatus") ?: return null
         return try {
             InAppUpdateStatus.valueOf(arg)
         } catch (e: Exception) {
