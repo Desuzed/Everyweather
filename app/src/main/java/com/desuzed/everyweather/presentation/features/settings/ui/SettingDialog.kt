@@ -15,10 +15,8 @@ import com.desuzed.everyweather.presentation.ui.settings.Pressure
 import com.desuzed.everyweather.presentation.ui.settings.SettingUiItem
 import com.desuzed.everyweather.presentation.ui.settings.Temperature
 import com.desuzed.everyweather.presentation.ui.settings.WindSpeed
-import com.desuzed.everyweather.ui.elements.AppDialog
 import com.desuzed.everyweather.ui.elements.AppSheetDialog
 
-//TODO: Переделать на боттомшиты
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingDialog(
@@ -36,87 +34,39 @@ fun SettingDialog(
     onAction: (SettingsAction) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    when (showDialogType) {
-        SettingsType.LANG -> AppDialog(onDismiss = onDismiss) {
-            AppDialog(onDismiss = onDismiss) {
-                SettingPickerContent(
+    if (showDialogType != null) {
+        AppSheetDialog(onDismissRequest = onDismiss) {
+            when (showDialogType) {
+                SettingsType.LANG -> SettingPickerContent(
                     selectedItem = language,
-                    radioOptions = langDialogItems
-                ) {
-                    onAction(
-                        SettingsAction.ChangeLanguage(lang = it)
-                    )
-                }
-            }
-        }
+                    radioOptions = langDialogItems,
+                    onPicked = { onAction(SettingsAction.ChangeLanguage(it)) },
+                )
 
-        SettingsType.TEMP -> AppDialog(onDismiss = onDismiss) {
-            AppSheetDialog(
-                onDismissRequest = onDismiss,
-                content = {
-                    SettingPickerContent(
-                        selectedItem = temperature,
-                        radioOptions = temperatureDialogItems
-                    ) {
-                        onAction(
-                            SettingsAction.ChangeTemperatureDimension(tempDimen = it)
-                        )
-                    }
-                },
-            )
-//            AppDialog(onDismiss = onDismiss) {
-//                SettingPickerContent(
-//                    selectedItem = temperature,
-//                    radioOptions = temperatureDialogItems
-//                ) {
-//                    onAction(
-//                        SettingsAction.ChangeTemperatureDimension(tempDimen = it)
-//                    )
-//                }
-//            }
-        }
+                SettingsType.TEMP -> SettingPickerContent(
+                    selectedItem = temperature,
+                    radioOptions = temperatureDialogItems,
+                    onPicked = { onAction(SettingsAction.ChangeTemperatureDimension(it)) },
+                )
 
-        SettingsType.DISTANCE -> AppDialog(onDismiss = onDismiss) {
-            AppDialog(onDismiss = onDismiss) {
-                SettingPickerContent(
+                SettingsType.DISTANCE -> SettingPickerContent(
                     selectedItem = windSpeed,
-                    radioOptions = distanceDialogItems
-                ) {
-                    onAction(
-                        SettingsAction.ChangeDistanceDimension(distanceDimen = it)
-                    )
-                }
-            }
-        }
+                    radioOptions = distanceDialogItems,
+                    onPicked = { onAction(SettingsAction.ChangeDistanceDimension(it)) },
+                )
 
-        SettingsType.DARK_MODE -> AppDialog(onDismiss = onDismiss) {
-            AppDialog(onDismiss = onDismiss) {
-                SettingPickerContent(
+                SettingsType.DARK_MODE -> SettingPickerContent(
                     selectedItem = darkTheme,
-                    radioOptions = darkModeDialogItems
-                ) {
-                    onAction(
-                        SettingsAction.ChangeDarkMode(darkMode = it)
-                    )
-                }
-            }
-        }
+                    radioOptions = darkModeDialogItems,
+                    onPicked = { onAction(SettingsAction.ChangeDarkMode(it)) },
+                )
 
-        SettingsType.PRESSURE -> {
-            AppDialog(onDismiss = onDismiss) {
-                SettingPickerContent(
+                SettingsType.PRESSURE -> SettingPickerContent(
                     selectedItem = pressure,
-                    radioOptions = pressureDialogItems
-                ) {
-                    onAction(
-                        SettingsAction.ChangePressureDimension(
-                            pressureDimen = it
-                        )
-                    )
-                }
+                    radioOptions = pressureDialogItems,
+                    onPicked = { onAction(SettingsAction.ChangePressureDimension(it)) },
+                )
             }
         }
-
-        null -> {}
     }
 }

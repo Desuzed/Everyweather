@@ -16,20 +16,14 @@ fun NextDaysWeatherBottomSheet(
     onBackClick: () -> Unit,
 ) {
     if (sheetState.isVisible && dayItem != null) {
-        //TODO Вынести в общий диалог
         ModalBottomSheet(
-            //      modifier = Modifier.navigationBarsPadding(),
             sheetState = sheetState,
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),//todo
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             dragHandle = null,
-//            containerColor = getBackgroundColor(),
-//            contentColor = getOnBackgroundColor(),
             onDismissRequest = onBackClick,
-            // windowInsets = WindowInsets(0, 0, 0, 0),
             content = {
                 NextDayBottomSheetContent(dayItem = dayItem)
             }
         )
     }
-
 }

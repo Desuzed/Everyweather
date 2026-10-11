@@ -1,8 +1,9 @@
 package com.desuzed.everyweather.presentation.features.weather_next_days.ui
 
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import com.desuzed.everyweather.domain.model.settings.DistanceDimen
 import com.desuzed.everyweather.domain.model.settings.Lang
 import com.desuzed.everyweather.domain.model.settings.PressureDimen
@@ -48,10 +49,8 @@ fun NextDayItem(
     onNextDayClick: (NextDaysUi) -> Unit,
 ) {
     RoundedCardItem(
-        onClick = {
-            Log.e("CLICK", "NextDayItem: CLICK", )
-            onNextDayClick(dayItem)
-        }
+        modifier = Modifier.testTag("next_day_${dayItem.nextDaysMainInfo.date}"),
+        onClick = { onNextDayClick(dayItem) }
     ) {
         NextDayItemContent(nextDaysMainInfo = dayItem.nextDaysMainInfo)
     }

@@ -14,32 +14,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshState
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.desuzed.everyweather.R
-import com.desuzed.everyweather.domain.model.settings.DistanceDimen
-import com.desuzed.everyweather.domain.model.settings.Lang
-import com.desuzed.everyweather.domain.model.settings.PressureDimen
-import com.desuzed.everyweather.domain.model.settings.TempDimen
 import com.desuzed.everyweather.presentation.features.weather_main.WeatherAction
 import com.desuzed.everyweather.presentation.features.weather_next_days.ui.NextDaysUiListContent
-import com.desuzed.everyweather.presentation.ui.UiMapper
 import com.desuzed.everyweather.presentation.ui.main.WeatherMainUi
 import com.desuzed.everyweather.presentation.ui.next_days.NextDaysUi
-import com.desuzed.everyweather.ui.AppPreview
 import com.desuzed.everyweather.ui.elements.BoldText
 import com.desuzed.everyweather.ui.elements.CardDetailDayItem
 import com.desuzed.everyweather.ui.elements.GradientBox
@@ -49,41 +38,6 @@ import com.desuzed.everyweather.ui.elements.MediumText
 import com.desuzed.everyweather.ui.elements.RoundedCardItem
 import com.desuzed.everyweather.ui.extensions.bottomEdgeToEdgePadding
 import com.desuzed.everyweather.ui.theming.EveryweatherTheme
-import com.desuzed.everyweather.util.MockWeatherObject
-import kotlinx.coroutines.launch
-
-@AppPreview
-@Composable
-private fun Preview() {
-    EveryweatherTheme {
-        val scope = rememberCoroutineScope()
-        val context = LocalContext.current
-        val mappedWeatherUi = remember { mutableStateOf<WeatherMainUi?>(null) }
-        LaunchedEffect(key1 = Unit) {
-            scope.launch {
-                mappedWeatherUi.value = UiMapper(
-                    context = context,
-                    selectedLanguage = Lang.RU,
-                    selectedDistanceDimen = DistanceDimen.METRIC_KMH,
-                    selectedTemperature = TempDimen.CELCIUS,
-                    selectedPressure = PressureDimen.MILLIMETERS,
-                ).mapToMainWeatherUi(MockWeatherObject.weather)
-            }
-        }
-        mappedWeatherUi.value?.let {
-            BottomDetailWeather(
-                weatherUi = it,
-                onAction = {},
-                onNextDayClick = {},
-                nextDaysUiList = remember { mutableStateOf(null) },
-                refreshingState = rememberPullRefreshState(
-                    refreshing = false,
-                    onRefresh = {},
-                )
-            )
-        }
-    }
-}
 
 private const val WEATHER_LINK_START_LETTER = ":"
 private const val WEATHER_LINK_START_INDEX = 2
@@ -108,12 +62,10 @@ fun BottomDetailWeather(
                     start = dimensionResource(id = R.dimen.dimen_20),
                     end = dimensionResource(id = R.dimen.dimen_20),
                 )
-                .pullRefresh(refreshingState)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.dimen_10)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //todo придумать анимацию
             if (weatherUi.hourList.isNotEmpty()) {
                 LazyRow {
                     items(items = weatherUi.hourList) { hourItem ->
@@ -168,5 +120,4 @@ fun BottomDetailWeather(
             )
         }
     }
-
 }

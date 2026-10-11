@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
@@ -79,12 +80,12 @@ fun AppSheetDialog(
     sheetState: SheetState = rememberModalBottomSheetState(),
     sheetMaxWidth: Dp = Dp.Unspecified,
     shape: Shape = RoundedCornerShape(16.dp),
-    containerColor: Color = Color.Unspecified,
-    contentColor: Color = Color.Unspecified,
+    containerColor: Color = EveryweatherTheme.colors.tertiaryBackground,
+    contentColor: Color = EveryweatherTheme.colors.onBackgroundPrimary,
     tonalElevation: Dp = 0.dp,
-    scrimColor: Color = Color.Unspecified,
-    dragHandle: @Composable (() -> Unit)? = null,
-    contentWindowInsets: @Composable () -> WindowInsets = { WindowInsets(0, 0, 0, 0) },
+    scrimColor: Color = Color.Black.copy(alpha = 0.32f),
+    dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     properties: ModalBottomSheetProperties = ModalBottomSheetProperties(),
     content: @Composable ColumnScope.() -> Unit,
 ) {

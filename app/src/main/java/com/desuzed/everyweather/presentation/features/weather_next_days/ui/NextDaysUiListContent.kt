@@ -9,7 +9,7 @@ fun ColumnScope.NextDaysUiListContent(
     nextDaysWeatherData: List<NextDaysUi>?,
     onNextDayClick: (NextDaysUi) -> Unit,
 ) {
-    nextDaysWeatherData?.forEach { forecastItem ->
+    nextDaysWeatherData?.forEachIndexed { _, forecastItem ->
         NextDayItem(
             dayItem = forecastItem,
             onNextDayClick = onNextDayClick,
