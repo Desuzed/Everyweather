@@ -13,6 +13,9 @@ import com.desuzed.everyweather.domain.repository.provider.ActionResultProvider
 import com.desuzed.everyweather.domain.repository.remote.RemoteDataRepository
 import com.desuzed.everyweather.domain.repository.settings.SystemSettingsRepository
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import java.io.IOException
 
 class WeatherInteractor(
     private val remoteDataRepository: RemoteDataRepository,
@@ -88,7 +91,12 @@ class WeatherInteractor(
         } catch (e: Exception) {
             weatherContent
         }
-        weatherDataRepository.saveForecastToCache(resultContent)
+        currentCoroutineContext().ensureActive()
+        try {
+            weatherDataRepository.saveForecastToCache(resultContent)
+        } catch (_: IOException) {
+            // Fresh weather remains usable even when persistent storage is unavailable.
+        }
         return resultContent
     }
 
