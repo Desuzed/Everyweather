@@ -1,9 +1,12 @@
 package com.desuzed.everyweather.analytics
 
 import android.content.Context
+import com.desuzed.everyweather.analytics.update.UpdateAnalytics
+import com.desuzed.everyweather.analytics.update.UpdateTelemetry
 import com.desuzed.everyweather.presentation.features.settings.SettingsAction
 
-class SettingsAnalytics(context: Context) : Analytics(context = context) {
+class SettingsAnalytics(context: Context, private val updateTelemetry: UpdateTelemetry) : Analytics(context = context) {
+    private val updateAnalytics = UpdateAnalytics(updateTelemetry)
 
     fun onAction(action: SettingsAction) {
         when (action) {
@@ -12,8 +15,8 @@ class SettingsAnalytics(context: Context) : Analytics(context = context) {
             is SettingsAction.ChangeLanguage -> logEvent(CHANGE_LANG)
             is SettingsAction.ChangePressureDimension -> logEvent(CHANGE_PRESSURE)
             is SettingsAction.ChangeTemperatureDimension -> logEvent(CHANGE_TEMPERATURE)
-            is SettingsAction.ReadyToLaunchUpdate -> logEvent(LAUNCH_UPDATE)
-            is SettingsAction.ReadyToInstall -> logEvent(INSTALL_UPDATE)
+            is SettingsAction.ReadyToLaunchUpdate -> updateAnalytics.settingsUpdateOpened()
+            is SettingsAction.ReadyToInstall -> updateAnalytics.settingsInstallOpened()
             else -> {}
         }
     }
@@ -24,7 +27,5 @@ class SettingsAnalytics(context: Context) : Analytics(context = context) {
         private const val CHANGE_TEMPERATURE = "settings_change_temp"
         private const val CHANGE_DISTANCE = "settings_change_distance"
         private const val CHANGE_PRESSURE = "settings_change_pressure"
-        private const val LAUNCH_UPDATE = "settings_launch_update"
-        private const val INSTALL_UPDATE = "settings_install_update"
     }
 }
