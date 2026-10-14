@@ -63,6 +63,7 @@ class MainActivityViewModel(
         val shouldToggle = systemInteractor.findUserLocation()
         toggleLookingForLocation(shouldToggle)
         if (shouldToggle) {
+            cancelTimerJob()
             timerJob = viewModelScope.launch {
                 Timer.timerFlow(TIMER_DURATION).onCompletion {
                     if (it !is CancellationException) {
@@ -81,6 +82,10 @@ class MainActivityViewModel(
         appUpdateProvider.startListeningForUpdates()
     }
 
+    fun onUpdateActivityResult(requestCode: Int, resultCode: Int) {
+        appUpdateProvider.onUpdateActivityResult(requestCode, resultCode)
+    }
+
     private fun collectLanguage(lang: Lang) {
         val lowercaseLang = lang.lang.lowercase()
         setState { copy(lang = lowercaseLang) }
@@ -88,11 +93,11 @@ class MainActivityViewModel(
     }
 
     private fun collectDarkTheme(darkMode: DarkMode) {
-        val mode = DarkMode.valueOf(darkMode.mode.uppercase())
-        setSideEffect(MainActivitySideEffect.ChangeDarkMode(mode))
+        setState { copy(darkMode = darkMode) }
     }
 
     private fun collectUserLocationResult(result: UserLocationResult?) {
+        if (result == null) return
         launch {
             if (result?.userLatLng != null) {
                 weatherDataRepository.saveQuery(
