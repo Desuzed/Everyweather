@@ -1,6 +1,7 @@
 package com.desuzed.everyweather.data.repository.providers
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -24,10 +25,13 @@ import kotlinx.coroutines.flow.asStateFlow
 class UserLocationProvider(
     private val context: Context,
     private val userLatLngMapper: UserLatLngMapper,
-) {
     private val fusedLocationClient: FusedLocationProviderClient =
-        LocationServices.getFusedLocationProviderClient(context)
+        LocationServices.getFusedLocationProviderClient(context),
+    private val permissionChecker: () -> Boolean = { hasLocationPermission(context) },
+) {
     private var lookingForLocation: Task<Location?>? = null
+    private var activeRequestId: Long? = null
+    private var nextRequestId = 0L
 
     private val _userLocationFlow = MutableStateFlow<UserLocationResult?>(null)
     val userLocationFlow: Flow<UserLocationResult?> = _userLocationFlow.asStateFlow()
@@ -37,27 +41,45 @@ class UserLocationProvider(
     fun findUserLocation(): Boolean {
         val oldValue = _userLocationFlow.value?.userLatLng
         val shouldRefreshLocation = oldValue?.let { shouldRefreshUserLocation(it) }
-        if (shouldRefreshLocation == false || lookingForLocation != null) {
-            val newValue = UserLocationResult(userLatLng = oldValue)
-            _userLocationFlow.value = newValue
+        if (shouldRefreshLocation == false) {
+            if (oldValue != null) {
+                _userLocationFlow.value = UserLocationResult(userLatLng = oldValue)
+            }
             return false
         }
+        if (lookingForLocation != null) return true
         if (arePermissionsGranted()) {
             val newCancellationSource = CancellationTokenSource()
+            val requestId = ++nextRequestId
             cancellationTokenSource = newCancellationSource
-            lookingForLocation = fusedLocationClient.getCurrentLocation(
-                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
-                newCancellationSource.token
-            )
+            activeRequestId = requestId
+            val task = try {
+                getCurrentLocation(newCancellationSource)
+            } catch (_: SecurityException) {
+                stopLookingForLocation(requestId)
+                onNull()
+                return false
+            }
+            lookingForLocation = task
+            task
                 .addOnCanceledListener {
+                    if (!isActiveRequest(requestId)) return@addOnCanceledListener
+                    onNull()
+                    stopLookingForLocation(requestId)
+                }
+                .addOnFailureListener {
+                    if (!isActiveRequest(requestId)) return@addOnFailureListener
+                    onNull()
+                    stopLookingForLocation(requestId)
                 }
                 .addOnSuccessListener { location ->
+                    if (!isActiveRequest(requestId)) return@addOnSuccessListener
                     if (location != null) {
                         onSuccess(location)
                     } else {
                         onNull()
                     }
-                    stopLookingForLocation()
+                    stopLookingForLocation(requestId)
                 }
             return true
         } else {
@@ -72,27 +94,35 @@ class UserLocationProvider(
     }
 
     fun arePermissionsGranted(): Boolean {
-        val permissionFine = ContextCompat.checkSelfPermission(
-            context,
-            FINE_LOCATION
-        )
-
-        val permissionCoarse = ContextCompat.checkSelfPermission(
-            context,
-            COARSE_LOCATION
-        )
-        return permissionFine == GRANTED || permissionCoarse == GRANTED
+        return permissionChecker()
     }
 
     fun onCancel() {
-        stopLookingForLocation()
+        stopLookingForLocation(activeRequestId)
         onNull()
     }
 
-    private fun stopLookingForLocation() {
-        cancellationTokenSource?.cancel()
+    /**
+     * [findUserLocation] calls this only after [arePermissionsGranted] succeeds. Permission can
+     * still be revoked between that check and this API call, so the caller also handles
+     * [SecurityException] and publishes a retryable result.
+     */
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLocation(cancellationTokenSource: CancellationTokenSource): Task<Location?> =
+        fusedLocationClient.getCurrentLocation(
+            LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
+            cancellationTokenSource.token,
+        )
+
+    private fun isActiveRequest(requestId: Long): Boolean = activeRequestId == requestId
+
+    private fun stopLookingForLocation(requestId: Long? = null) {
+        if (requestId != null && !isActiveRequest(requestId)) return
+        val tokenSource = cancellationTokenSource
         cancellationTokenSource = null
         lookingForLocation = null
+        activeRequestId = null
+        tokenSource?.cancel()
     }
 
     private fun onSuccess(location: Location) {
@@ -116,6 +146,12 @@ class UserLocationProvider(
         private const val GRANTED = PackageManager.PERMISSION_GRANTED
         private const val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
         private const val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
+
+        private fun hasLocationPermission(context: Context): Boolean {
+            val permissionFine = ContextCompat.checkSelfPermission(context, FINE_LOCATION)
+            val permissionCoarse = ContextCompat.checkSelfPermission(context, COARSE_LOCATION)
+            return permissionFine == GRANTED || permissionCoarse == GRANTED
+        }
     }
 
 }

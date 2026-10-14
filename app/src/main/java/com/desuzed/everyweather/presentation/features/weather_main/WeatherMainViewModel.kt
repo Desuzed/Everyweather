@@ -1,5 +1,10 @@
 package com.desuzed.everyweather.presentation.features.weather_main
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import com.desuzed.everyweather.analytics.WeatherMainAnalytics
 import com.desuzed.everyweather.domain.interactor.LocationInteractor
 import com.desuzed.everyweather.domain.interactor.WeatherInteractor
@@ -27,42 +32,53 @@ class WeatherMainViewModel(
     private val systemSettingsRepository: SystemSettingsRepository,
 ) : BaseViewModel<WeatherState, WeatherMainEffect, WeatherAction>(WeatherState()) {
 
+    private var requestJob: Job? = null
+
     init {
         collect(weatherSettingsInteractor.distanceDimen, ::collectWindSpeed)
         collect(weatherSettingsInteractor.tempDimen, ::collectTemperature)
         collect(systemSettingsRepository.lang, ::collectLanguage)
         collect(weatherSettingsInteractor.pressureDimen, ::collectPressure)
         collect(weatherDataRepository.getQueryFlow(), ::onNewQuery)
-        onAction(WeatherAction.Refresh)
         collect(weatherDataRepository.getWeatherContentFlow(), ::onNewWeatherContent)
     }
 
     private fun getForecast(query: String, userLatLng: UserLatLng? = null) {
-        launch {
+        requestJob?.cancel()
+        requestJob = viewModelScope.launch {
             setState { copy(isLoading = true, query = query) }
-            val fetchedForecast = weatherInteractor.fetchForecastOrErrorMessage(
-                query = query,
-                userLatLng = userLatLng,
-            )
-
-            val actionResult = fetchedForecast.queryResult
-            val isLocationSaved = fetchedForecast.weatherContent?.let {
-                isLocationSaved(it)
-            }
-            setState {
-                copy(
-                    isLoading = false,
-                    isAddButtonEnabled = isLocationSaved?.not() ?: false,
+            try {
+                val fetchedForecast = weatherInteractor.fetchForecastOrErrorMessage(
+                    query = query,
+                    userLatLng = userLatLng,
                 )
-            }
-            if (actionResult != null) {
-                setSideEffect(WeatherMainEffect.ShowSnackBar(actionResult))
+
+                ensureActive()
+                val actionResult = fetchedForecast.queryResult
+                val isLocationSaved = fetchedForecast.weatherContent?.let {
+                    isLocationSaved(it)
+                }
                 setState {
                     copy(
+                        weatherData = fetchedForecast.weatherContent ?: weatherData,
                         isLoading = false,
-                        isAddButtonEnabled = false,
+                        isAddButtonEnabled = isLocationSaved?.not() ?: false,
                     )
                 }
+                if (actionResult != null) {
+                    setSideEffect(WeatherMainEffect.ShowSnackBar(actionResult))
+                    setState {
+                        copy(
+                            isLoading = false,
+                            isAddButtonEnabled = false,
+                        )
+                    }
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                setState { copy(isLoading = false, isAddButtonEnabled = false) }
+                setSideEffect(WeatherMainEffect.ShowSnackBar(QueryResult(UNKNOWN, query)))
             }
         }
     }
@@ -120,9 +136,7 @@ class WeatherMainViewModel(
     }
 
     private fun onNewWeatherContent(weatherContent: WeatherContent?) {
-        if (state.value.weatherData != null && weatherContent == null) {
-            setSideEffect(WeatherMainEffect.ShowSnackBar(QueryResult(UNKNOWN)))
-        } else {
+        if (weatherContent != null) {
             setState { copy(weatherData = weatherContent) }
         }
     }

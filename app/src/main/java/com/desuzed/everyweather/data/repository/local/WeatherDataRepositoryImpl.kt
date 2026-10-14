@@ -8,7 +8,6 @@ import com.desuzed.everyweather.domain.repository.local.SharedPrefsProvider
 import com.desuzed.everyweather.domain.repository.local.WeatherDataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,34 +20,20 @@ class WeatherDataRepositoryImpl(
 
     //TODO: Рефакторинг UUID на мультиплатформу
     override suspend fun saveForecastToCache(weatherContent: WeatherContent) {
-        try {
-            val stringData = Json.encodeToString(
-                WeatherUniqueContent(
-                    id = UUID.randomUUID().toString(),
-                    content = weatherContent,
-                )
-            )
-            weatherDataStore.setForecastData(stringData)
-
-        } catch (_: Exception) {
-        }
+        val stringData = Json.encodeToString(
+            WeatherUniqueContent(UUID.randomUUID().toString(), weatherContent)
+        )
+        weatherDataStore.setForecastData(stringData)
     }
 
     //TODO: Удалить после полной раскатки с датастором
     override fun getWeatherContentFlow(): Flow<WeatherContent?> = weatherDataStore
         .getForecastData()
         .map { stringWeather ->
-            if (stringWeather.isBlank()) {
-                val prefsData = sharedPrefsProvider.loadForecastFromCache()
-                if (prefsData != null) {
-                    WeatherUniqueContent(
-                        id = UUID.randomUUID().toString(),
-                        content = prefsData,
-                    )
-                } else null
-            } else {
-                stringWeather.decodeFromJson<WeatherUniqueContent>()
-            }
+            stringWeather.decodeFromJson<WeatherUniqueContent>()
+                ?: sharedPrefsProvider.loadForecastFromCache()?.let {
+                    WeatherUniqueContent(id = "legacy", content = it)
+                }
         }
         .distinctUntilChangedBy { it?.id }
         .map { it?.content }
@@ -72,11 +57,13 @@ class WeatherDataRepositoryImpl(
     }
 
     override suspend fun updateQueryShouldNotBeTriggered() {
-        val weatherQuery = getQueryFlow().firstOrNull()
-
-        weatherQuery?.let {
-            val updatedQuery = weatherQuery.copy(shouldTriggerWeatherRequest = false)
-            weatherDataStore.setQuery(Json.encodeToString(updatedQuery))
+        weatherDataStore.updateQuery { query ->
+            val weatherQuery = query.decodeFromJson<WeatherQuery>()
+            if (weatherQuery == null || weatherQuery.query.isBlank()) {
+                query
+            } else {
+                Json.encodeToString(weatherQuery.copy(shouldTriggerWeatherRequest = false))
+            }
         }
     }
 
@@ -87,7 +74,7 @@ class WeatherDataRepositoryImpl(
             val decodedQuery = query.decodeFromJson<WeatherQuery>()
             if (decodedQuery == null || decodedQuery.query.isBlank()) {
                 WeatherQuery(
-                    id = UUID.randomUUID().toString(),
+                    id = "legacy",
                     query = sharedPrefsProvider.loadQuery(),
                     userChosenMapPoint = null,
                 )

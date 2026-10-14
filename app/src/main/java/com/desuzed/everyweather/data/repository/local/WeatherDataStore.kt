@@ -20,6 +20,13 @@ class WeatherDataStore(private val context: Context) : BaseDatastoreApiProvider(
             preferences[KEY_QUERY] = query
         }
 
+    suspend fun updateQuery(transform: (String) -> String) =
+        edit { preferences ->
+            preferences[KEY_QUERY]?.let { query ->
+                preferences[KEY_QUERY] = transform(query)
+            }
+        }
+
     fun getQuery(): Flow<String> = getFlowOf(KEY_QUERY, Constants.EMPTY_STRING)
 
     suspend fun setForecastData(weatherData: String) =

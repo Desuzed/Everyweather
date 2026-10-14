@@ -8,6 +8,7 @@ import com.desuzed.everyweather.domain.model.app_update.InAppUpdateStatus
 import com.desuzed.everyweather.presentation.base.BaseComposeScreen
 import com.desuzed.everyweather.presentation.base.navigate
 import com.desuzed.everyweather.presentation.features.in_app_update.InAppUpdateScreen
+import com.desuzed.everyweather.presentation.features.location_main.LocationMainScreen
 import com.desuzed.everyweather.presentation.features.weather_main.ui.WeatherMain
 import com.desuzed.everyweather.ui.navigation.Destination
 import com.desuzed.everyweather.ui.navigation.getMainActivity
@@ -53,14 +54,16 @@ object WeatherMainScreen : BaseComposeScreen<
             ),
             onEffect = {
                 when (it) {
-                    WeatherMainEffect.NavigateToLocation -> navController.navigate(
-                        screen = InAppUpdateScreen,
-                        argName = "InAppUpdateStatus",
-                        argValue = InAppUpdateStatus.READY_TO_INSTALL.name,
-                    )
-
-                    WeatherMainEffect.NavigateToNextDaysWeather -> {
-
+                    WeatherMainEffect.NavigateToLocation -> {
+                        //todo плохо работает - не загружаетс погода
+                       navController.navigate(
+                        screen = LocationMainScreen,
+                        )
+//                        navController.navigate(
+//                            screen = InAppUpdateScreen,
+//                            argName = "InAppUpdateStatus",
+//                            argValue = InAppUpdateStatus.READY_TO_INSTALL.name,
+//                        )
                     }
 
                     is WeatherMainEffect.ShowSnackBar -> {
