@@ -2,16 +2,27 @@ package com.desuzed.everyweather.ui.elements
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.ui.AppPreview
@@ -58,6 +69,40 @@ fun AppDialog(
             content()
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppSheetDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    sheetMaxWidth: Dp = Dp.Unspecified,
+    shape: Shape = RoundedCornerShape(16.dp),
+    containerColor: Color = Color.Unspecified,
+    contentColor: Color = Color.Unspecified,
+    tonalElevation: Dp = 0.dp,
+    scrimColor: Color = Color.Unspecified,
+    dragHandle: @Composable (() -> Unit)? = null,
+    contentWindowInsets: @Composable () -> WindowInsets = { WindowInsets(0, 0, 0, 0) },
+    properties: ModalBottomSheetProperties = ModalBottomSheetProperties(),
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        sheetState = sheetState,
+        sheetMaxWidth = sheetMaxWidth,
+        shape = shape,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        tonalElevation = tonalElevation,
+        scrimColor = scrimColor,
+        dragHandle = dragHandle,
+        contentWindowInsets = contentWindowInsets,
+        properties = properties,
+        content = content,
+    )
 }
 
 @AppPreview
