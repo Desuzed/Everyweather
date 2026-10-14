@@ -1,66 +1,63 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-import java.io.FileInputStream
-import java.io.InputStreamReader
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinCompose)
     alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
-android {
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+val localConfig = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+fun configValue(name: String): String? = providers.environmentVariable(name).orNull
+    ?: providers.gradleProperty(name).orNull
+    ?: localConfig.getProperty(name)
+fun String.asBuildConfigString(): String = "\"" + replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+val releaseStore = configValue("KEYSTORE_PATH") ?: "sign/everyweather_keystore.jks"
+val releaseAlias = configValue("KEY_ALIAS")
+val releasePassword = configValue("KEYSTORE_PASSWORD")
+val releaseKeyPassword = configValue("KEY_PASSWORD") ?: releasePassword
+val hasReleaseSigning = !releaseAlias.isNullOrBlank() && !releasePassword.isNullOrBlank()
+    && rootProject.file(releaseStore).isFile
 
+android {
+    namespace = libs.versions.appPackageName.get()
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
         applicationId = libs.versions.appPackageName.get()
-        namespace = libs.versions.appPackageName.get()
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = libs.versions.appVersion.get().toInt()
         versionName = libs.versions.appVersionName.get()
-        archivesName = "everyweather"
-        setProperty("archivesBaseName", archivesName.get() + "_v" + versionName)
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.desuzed.everyweather.TestRunner"
+        buildConfigField("String", "WEATHER_API_KEY", (configValue("WEATHER_API_KEY") ?: "").asBuildConfigString())
+        buildConfigField("String", "LOCATION_IQ_API", (configValue("LOCATION_IQ_API") ?: "").asBuildConfigString())
+        manifestPlaceholders["MAPS_API_KEY"] = configValue("MAPS_API_KEY") ?: ""
     }
-    val signConfigName = "release_sign_config"
+    sourceSets.getByName("androidTest").assets.directories.add("$projectDir/schemas")
     signingConfigs {
-        val properties = getLocalProperties()
-        val alias = properties.getPropertyValue("KEY_ALIAS")
-        val keystorePassword = properties.getPropertyValue("KEYSTORE_PASSWORD")
-        create(signConfigName) {
-            storeFile = file("../sign/everyweather_keystore.jks")
-            keyAlias = alias
-            storePassword = keystorePassword
-            keyPassword = keystorePassword
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(releaseStore)
+                keyAlias = releaseAlias
+                storePassword = releasePassword
+                keyPassword = releaseKeyPassword
+            }
         }
     }
-
     buildTypes {
-        getByName("debug") {
+        debug {
             applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.findByName(signConfigName)
         }
-        getByName("release") {
+        release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.findByName(signConfigName)
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            signingConfig = signingConfigs.findByName("release")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -68,73 +65,55 @@ android {
     }
     buildFeatures {
         buildConfig = true
-        viewBinding = true
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    testOptions {
+        animationsDisabled = true
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+val validateReleaseCredentials by tasks.registering {
+    doLast {
+        check(hasReleaseSigning) { "Release signing requires KEYSTORE_PATH, KEY_ALIAS and KEYSTORE_PASSWORD. Debug and tests need no signing secrets." }
+        check(listOf("WEATHER_API_KEY", "LOCATION_IQ_API", "MAPS_API_KEY").all { !configValue(it).isNullOrBlank() }) {
+            "Release requires WEATHER_API_KEY, LOCATION_IQ_API and MAPS_API_KEY."
+        }
+    }
+}
+tasks.matching { it.name == "preReleaseBuild" }.configureEach { dependsOn(validateReleaseCredentials) }
+
 dependencies {
-    //Coroutines
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
-
-    //Compose
     implementation(libs.bundles.compose)
-
-    //Navigation
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.compose.navigation)
-
-    //Koin DI
     implementation(libs.bundles.koin)
-
-    //Network
     implementation(libs.bundles.network)
-
-    //Room
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-
-    //Datastore
     implementation(libs.datastore.preferences)
-
-    //Analytic
     implementation(libs.bundles.analytic)
-
-    //Google Services
     implementation(libs.bundles.google.services)
-
-    //Util
     implementation(libs.app.update)
     implementation(libs.kotlinx.serialization)
-
-    //Пришлось добавить зависимость lifecycle т.к appCompat 1.5.1 без неё не работает
     implementation(libs.android.viewmodel)
-
-    //Test
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material.views)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.composeUiTooling)
+    debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockwebserver)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-}
-
-fun Project.getLocalProperties(): Properties {
-    val localPropertiesFileName = "local.properties"
-    val properties = Properties()
-    val localProperties = File(localPropertiesFileName)
-    if (localProperties.isFile) {
-        InputStreamReader(FileInputStream(localProperties), Charsets.UTF_8).use { reader ->
-            properties.load(reader)
-        }
-    } else error("File \"$localPropertiesFileName\" not found")
-
-    return properties
-}
-
-fun Properties.getPropertyValue(key: String): String {
-    return this.getProperty(key) as String
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.coroutines.test)
 }

@@ -36,7 +36,7 @@ data class FavoriteLocationDto(
                 region = location.region,
                 country = location.country,
                 lat = location.lat.toString(),
-                lon = location.name,
+                lon = location.lon.toString(),
             )
         }
     }

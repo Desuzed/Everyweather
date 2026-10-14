@@ -3,90 +3,22 @@ package com.desuzed.everyweather.util
 import android.content.Context
 import android.content.res.Resources.getSystem
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.DialogFragmentNavigator
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_SLIDE
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.Flow
 import java.util.Locale
-
-fun Fragment.navigate(directions: Int, bundle: Bundle? = null) {
-    val controller = findNavController()
-    if (isTargetDestination()) {
-        if (bundle == null) {
-            controller.navigate(directions)
-        } else {
-            controller.navigate(directions, bundle)
-        }
-    }
-}
-
-fun <V> Fragment.navigateBackWithParameter(key: String, value: V) {
-    findNavController().apply {
-        previousBackStackEntry?.savedStateHandle?.set(key, value)
-        navigateUp()
-    }
-}
-
-fun <V> Fragment.setArgumentObserver(key: String, consumer: (V) -> Unit) {
-    val savedState = findNavController().currentBackStackEntry?.savedStateHandle
-    savedState?.getLiveData<V>(key)?.observe(viewLifecycleOwner) {
-        consumer(it)
-        savedState.remove<String>(key)
-    }
-}
-
-fun Fragment.isTargetDestination(): Boolean {
-    val controller = findNavController()
-    val currentDestination =
-        (controller.currentDestination as? FragmentNavigator.Destination)?.className
-            ?: (controller.currentDestination as? DialogFragmentNavigator.Destination)?.className
-    return currentDestination == this.javaClass.name
-}
-
-fun Fragment.addOnBackPressedCallback() {
-    val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            onBackClick()
-        }
-    }
-    requireActivity().onBackPressedDispatcher.addCallback(
-        viewLifecycleOwner,
-        onBackPressedCallback
-    )
-}
-
-fun Fragment.onBackClick() {
-    if (isTargetDestination()) {
-        findNavController().navigateUp()
-    }
-}
 
 inline fun <T> Fragment.collect(
     source: Flow<T>,
     crossinline consumer: suspend (T) -> Unit
 ) {
     viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-        source.collect {
-            consumer(it)
-        }
-    }
-}
-
-inline fun <T> Fragment.collectWhenResumed(
-    source: Flow<T>,
-    crossinline consumer: suspend (T) -> Unit
-) {
-    viewLifecycleOwner.lifecycleScope.launchWhenResumed {
         source.collect {
             consumer(it)
         }
