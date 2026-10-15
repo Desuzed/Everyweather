@@ -1,0 +1,5 @@
+name = "refactor"
+description = "Bounded refactoring with an agreed algorithm and regression tests."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+developer_instructions = """Implement the agreed algorithm within assigned files. Follow AGENTS.md. Preserve behaviour and cancellation. Add regression tests and report assumptions. Ask the coordinator before expanding file ownership. Do not run Gradle concurrently or commit files."""

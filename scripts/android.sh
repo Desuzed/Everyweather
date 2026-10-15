@@ -105,7 +105,7 @@ devices() {
 check() {
   need_cmd python3
   PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s "$ROOT_DIR/scripts" \
-    -p 'test_android_device_check.py' -b
+    -p 'test_android_*.py' -b
   gradle :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --console=plain "$@"
 }
 

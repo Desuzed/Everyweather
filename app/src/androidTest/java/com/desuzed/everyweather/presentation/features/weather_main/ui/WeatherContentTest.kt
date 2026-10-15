@@ -10,8 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.desuzed.everyweather.R
@@ -83,7 +85,10 @@ class WeatherContentTest {
         }
 
         composeRule.onNodeWithTag("save_location").performClick()
-        composeRule.onNodeWithTag("next_day_${nextDay.nextDaysMainInfo.date}").performClick()
+        composeRule.onNodeWithTag("next_day_${nextDay.nextDaysMainInfo.date}")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
 
         assertEquals(WeatherAction.SaveLocation, actions.single())
         assertSame(nextDay, selectedDays.last())
