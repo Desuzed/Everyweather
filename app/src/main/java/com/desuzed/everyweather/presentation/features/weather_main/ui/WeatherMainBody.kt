@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.presentation.features.weather_main.WeatherAction
@@ -61,7 +62,9 @@ fun WeatherMainBody(
     )
     val fabSize = dimensionResource(id = R.dimen.dimen_50)
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("weather_main_content"),
     ) {
         var fabPadding by remember { mutableStateOf(0.dp) }
         val weatherUi = weatherData.value
@@ -92,7 +95,8 @@ fun WeatherMainBody(
                             top = fabPadding,
                             start = dimensionResource(id = R.dimen.dimen_20)
                         )
-                        .size(size = fabSize),
+                        .size(size = fabSize)
+                        .testTag("save_location"),
                     id = R.drawable.ic_round_add_location_24,
                     onClick = { onAction(WeatherAction.SaveLocation) }
                 )

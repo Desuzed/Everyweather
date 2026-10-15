@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import com.desuzed.everyweather.R
 import com.desuzed.everyweather.domain.model.location.FavoriteLocation
@@ -66,6 +67,7 @@ fun LocationItemContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(dimensionResource(id = R.dimen.dimen_10))
+                    .testTag("favorite_location_${item.latLon}")
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = { onLongClick(item) },
@@ -79,7 +81,10 @@ fun LocationItemContent(
                 )
                 MediumText(text = item.fullName())
             }
-            IconButton(onClick = { onEditClick(item) }) {
+            IconButton(
+                modifier = Modifier.testTag("edit_favorite_location_${item.latLon}"),
+                onClick = { onEditClick(item) },
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_edit_location),
                     tint = EveryweatherTheme.colors.onBackgroundPrimary,
